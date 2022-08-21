@@ -35,7 +35,7 @@ then
 mkdir -p "/home/${user_run_script}/.local/share/applications"
 fi
 
-# Проверка установлен vscodium или нет в папке пользователя
+# Проверка установлен GravityMark или нет в папке пользователя
 if [ ! -d "/home/${user_run_script}/GravityMark[1-53]portable" ]
 then
 tput setaf 2; echo "Benchmark ${version_app} не установлен в папку пользователя ${user_run_script}, поэтому можно устанавливать :)"
