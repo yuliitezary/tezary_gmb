@@ -1,3 +1,0 @@
-cd ~/.config/retroarch
-git clone --recursive --depth=1 http://github.com/libretro-thumbnails/libretro-thumbnails.git thumbnails
-
