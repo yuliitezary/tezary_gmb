@@ -112,6 +112,14 @@ sudo tune2fs -m 0 /dev/sda1
 #но не рекомендую делать на системном диске меньше: 1%#
 #можно применять на дисках где уже есть инфо, нечего плохого не случиться, проверено!#
 
+#XTRADEB APPLICATIONS
+#https://xtradeb.net/category/apps/
+#https://launchpad.net/~xtradeb/+archive/ubuntu/apps/+packages
+sudo add-apt-repository ppa:xtradeb/apps
+sudo apt update
+#sudo apt install -f czkawka chromium firefox fotoxx freefilesync gparted soundconverter synergy virt-manager youtube-dl 
+
+
 
 #[ENCFS -EASY WAY TO ENCRYPT FOLDERS IN PC OR CLOUD STORAGE]
 sudo apt install -f encfs
@@ -238,7 +246,7 @@ cp -f /usr/share/applications/nemo.desktop /home/$USER/.config/autostart/
 
 #[ENABLE MULTIPLE SIMULTANEOUS AUDIO OUTPUTS ON PULSEAUDIO IN LINUX + PULSEAUDIO CONTROL]
 sudo apt install paprefs pavucontrol
-
+# error in paprefs on  Pipewire?  use on boot: pactl load-module module-combine-sink
 
 #[XSCREENSAVER,ORIGINAL MATRIX SCREENSAVER]
 sudo apt install xscreensaver xscreensaver-gl xscreensaver-data-extra xscreensaver-gl-extra xscreensaver-screensaver-bsod
@@ -272,7 +280,7 @@ sudo apt install -f  --reinstall gnome-session gnome-session-wayland gnome-tweak
 
 
 #[SOFT TOOLS FOR VIZUAL AND SYSTEM]-[UBUNTU 21.10]
-sudo apt install -f  --reinstall gnome-session gnome-session-wayland gnome-tweaks chrome-gnome-shell gnome-shell-extensions plymouth-theme-ubuntu-gnome-logo numix-icon-theme-circle git libglib2.0-dev
+sudo apt install -f  --reinstall gnome-session gnome-session-wayland gnome-tweaks chrome-gnome-shell gnome-shell-extensions plymouth-theme-ubuntu-gnome-logo numix-icon-theme-circle git libglib2.0-dev ubuntu-restricted-extras
 
 
 #[BACK TO UBUNTU GNOME VANILLA IN UBUNTU]-[FOR UBUNTU 20.04.3!]
@@ -386,6 +394,15 @@ sudo usermod -aG vboxusers $USER
 xrandr --newmode "1920x1080"  173.00  1920 2048 2248 2576  1080 1083 1088 1120 -hsync +vsync
 xrandr --addmode Virtual1 1920x1080
 xrandr --output Virtual1 --mode 1920x1080
+
+# [КОМАНДЫ УСТАНОВКИ QEMU-KVM ДЛЯ UBUNTU 20.04.3+]
+sudo apt install -f qemu qemu-kvm libvirt-daemon libvirt-clients bridge-utils virt-manager libvirglrenderer-dev libvirglrenderer-dev libvirglrenderer1 virgl-server
+sudo gpasswd -a $USER libvirt
+sudo systemctl status libvirtd
+#reboot
+#а тут можно почитать о настройке virt-manager + VirtIO :
+#https://losst.ru/ustanovka-kvm-ubuntu-16-04
+#https://ryan.himmelwright.net/post/virtio-3d-vms/
 
 
 #[REMOVE DEFAULT FIREFOX SNAP, AND INSTALL BACK THE CLASSIC DEB PACKAGE]
@@ -596,15 +613,12 @@ sudo apt install touchegg
 
 
 #[INSTALL-BEST-OPEN-LINUX-GAMES]
-sudo apt install -f supertuxkart supertux supertux-data 0ad 0ad-data 0ad-data-common minetest minetest-data warzone2100 warzone2100 warzone2100-data ufoai
-
-#[OpenRA (Tiberian Dawn,Red Alert,Dune 2000) AppImage]
-https://github.com/OpenRA/OpenRA/releases
-
-#mega pack xtradeb games (ubuntu 20.04.4)
+#MEGA PACK XTRADEB GAMES
+#https://xtradeb.net/category/play/
+#https://launchpad.net/~xtradeb/+archive/ubuntu/play
 sudo add-apt-repository ppa:xtradeb/play
 sudo apt-get update 
-sudo apt install -f openttd openra megamario speed-dreams supertuxkart 0ad warsow warzone2100 xonotic wesnoth urbanterror
+sudo apt install -f eduke32  etlegacy minetest minetest-data flightgear gameplayfootball gzdoom  openra redeclipse simgear stepmania stuntrally urbanterror tsc xonotic vdrift wesnoth-1.14 terasology openttd megamario speed-dreams supertux supertuxkart 0ad warsow warzone2100 xonotic wesnoth urbanterror ufoai
 
 
 
@@ -696,6 +710,8 @@ systemd-analyze blame
 systemd-analyze critical-chain
 
 
+#EXEMPLE[FROM REDROOT]:
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash amdgpu.ppfeaturemask=0xffffffff mitigations=off rootfstype=ext4 libahci.ignore_sss=1 raid=noautodetect selinux=0 lpj=4988258 loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3 apparmor=1 security=apparmor"
 
 
 

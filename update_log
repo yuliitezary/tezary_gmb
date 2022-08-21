@@ -1,12 +1,79 @@
+[buz-gmb 0.494]===================================
+-add amdvlk-portable (gcn1-rdna2) - TESTING!
+-Mangohud-git - UPDATE for ROSA
+-add wallpapers from redroot in ROSA gnome-settings - TESTING!
+-add icons Numix for ROSA - TESTING!
+-add Theme Adwaita-dark for ROSA - TESTING!
+-add repo ROSA GAMING - TESTING!  
+-Mesa-Devel-Fidel for ROSA  - TESTING!
+-Mesa-Git-Fidel for ROSA - TESTING!
+-add big support ROSA Fresh Desktop 12.2
+-xanmod - UPDATE for ROSA
+-CoreCtrl - UPDATE for ROSA
+-DisableMitigations - UPDATE for ROSA
+-Linux-logs-fix - UPDATE for ROSA
+-AMD-anti-tearing - UPDATE for ROSA
+-Psensor - UPDATE for ROSA
+-Glances - UPDATE for ROSA
+-Steam Linux - UPDATE for ROSA
+-ProtonUp-Qt - UPDATE for ROSA
+-PortProton - UPDATE for ROSA
+-gravity-mark-portable - UPDATE for ROSA
+-Furmark-Linux - UPDATE for ROSA
+-Refresh2025-Benchmark - UPDATE for ROSA
+-obs-studio-ppa - UPDATE for ROSA
+-NoiseTorch-app - UPDATE for ROSA
+-Kdenlive-ppa - UPDATE for ROSA
+-Natron-portable - UPDATE (to 2.4.3) for ROSA
+-SimpleScreenRecorder-ppa - UPDATE for ROSA
+-Lossless-Cut-appimage - UPDATE for ROSA
+-Blender-ppa - UPDATE for ROSA
+-Blender-2.83.18-portable - UPDATE for ROSA
+-Blender-2.93.7-portable - UPDATE for ROSA
+-Blender-3.1.2-portable - UPDATE for ROSA
+-MagicaVoxel-wine - UPDATE for ROSA
+-vscodium-portable - UPDATE for ROSA
+-godot-ppa - UPDATE for ROSA
+-godot-portable - UPDATE for ROSA
+-Krita-ppa - UPDATE for ROSA
+-Krita-appimage - UPDATE for ROSA
+-Inkscape-ppa - UPDATE for ROSA
+-Inkscape-appimage - UPDATE for ROSA
+-pinta-ppa - UPDATE for ROSA
+
+
+IN DEVELOPMENT
+-icq-new-portable - hold
+-discord-ppa - hold
+-telegram-ppa - hold
+-scrcpy-ppa - hold
+-peek-ppa - hold
+-scribus-ppa - hold
+-firefox-ppa - hold
+-chromium-ppa - hold
+-qbittorent-ppa - hold
+-remmina-ppa - hold
+-timeshift ppa - hold
+-gparted-ppa - hold
+-grub-customizer ppa - hold
+-stacer ppa - hold
+-libstrangle-tools - hold
+-Nvidia antitearing - hold
+-GWE (overclock nvidia) - hold
+-Nvidia cuda support for blender+ - hold
+
 [buz-gmb 0.493]===================================
 -add support Ubuntu 22.04 LTS
 -gnome-gui-switcher - TESTING!
+-GravityMark[1-53]portable - TESTING!
 -godot-portable - UPDATE (3.4.4)
 -vscodium-portable - UPDATE (VSCodium-1.66.2)
 -xanmod - UPDATE
--mesa-modules - UPDATE
-Refresh2025 - FIX\UPDATE
-Furmark-Linux - FIX\UPDATE
+-mesa-modules - UPDATE and fix for 22.*
+-refresh2025 - FIX\UPDATE
+-furmark-Linux - FIX\UPDATE
+-steam - add support Manjaro!
+-mini-install - UPDATE Manjaro packeg!
 
 IN DEVELOPMENT
 -icq-new-portable - hold

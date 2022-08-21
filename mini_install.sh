@@ -8,6 +8,10 @@ tput setaf 1; echo "Этот скрипт не нужно запускать и�
 else
 tput setaf 2; echo "все хорошо этот скрипт не запущен из под root!"
 fi
+#собираем данные о том в какой папке находиться bzu-gmb
+script_dir=$(cd $(dirname "$0") && pwd);
+
+
 
 #запрос пароля root для установки ПО необходимого для bzu-gmb
 read -sp 'Введите Пароль root:' pass_user
@@ -23,8 +27,7 @@ sleep 5
 exit 0
 fi
 
-#собираем данные о том в какой папке находиться bzu-gmb
-script_dir=$(cd $(dirname "$0") && pwd);
+#системные переменные bzu-gmb
 version_bzu_gmb=`cat "${script_dir}/config/name_version"`
 app_dir="${script_dir}/modules-temp"
 name_desktop_file="bzu-gmb.desktop"
@@ -78,19 +81,165 @@ tput sgr0
 function install_package {
 dpkg -s $1 | grep installed > /dev/null || echo "no installing $1 :(" | echo "$2" | sudo -S apt install -f -y $1
 package_status=`dpkg -s $1 | grep -oh "installed"`
-echo "$1:" $package_status
+tput setaf 3;echo -n "$1:";tput setaf 2;echo "$package_status";tput sgr 0
 }
-
+#=====================================================================================
 #функция для проверки пакетов на установку в pacman, если нужно установлевает
 function install_package_pamac {
 pamac list -i | grep "$1" > /dev/null || echo "no installing $1 :(" | echo "$2" | sudo -S pamac install --no-confirm $1
 package_status=`pamac list -i | grep "pv" > /dev/null | echo "installing"`
-echo "$1:" $package_status
+tput setaf 3;echo -n "$1:";tput setaf 2;echo "$package_status";tput sgr 0
+}
+#=====================================================================================
+#функция для проверки пакетов на установку в rpm, если нужно установлевает
+function install_package_rpm {
+rpm -qa | grep "$1" > /dev/null || echo "no installing $1 :(" | echo "$2" | sudo -S dnf install -y $1
+package_status=`rpm -qa | grep "$1" > /dev/null | echo "installing"`
+tput setaf 3;echo -n "$1:";tput setaf 2;echo "$package_status";tput sgr 0
 }
 
-#Проверяем какая система запустила bzu-gmb, если Ubuntu\Linux Mint устанавливаем нужные пакеты
-if echo "${linux_os}" | grep -ow "Ubuntu 20.04.4 LTS" > /dev/null || echo "${linux_os}" | grep -ow "Mint" > /dev/null
+#Проверяем какая система запустила bzu-gmb, если ROSA Fresh Desktop 12.2 устанавливаем нужные пакеты
+if echo "${linux_os}" | grep -ow "ROSA Fresh Desktop 12.2" > /dev/null
 then
+###############################################################################
+# проверка наличия системных папок bzu-gmb
+# Проверка что существует папка applications, если нет, создаем ее
+ if [ ! -d "/home/${USER}/.local/share/applications" ]
+ then
+mkdir -p "/home/${USER}/.local/share/applications"
+ fi
+# Проверка что существует папка autostart, если нет, создаем ее
+ if [ ! -d "/home/${USER}/.config/autostart" ]
+ then
+mkdir -p "/home/${USER}/.config/autostart"
+else
+ if [ -e /home/${USER}/.config/autostart/gnome-desktop-icons-touch.desktop ] || [ -e /home/${USER}/.config/autostart/gnome-desktop-icons.desktop ];then
+ rm -f /home/${USER}/.config/autostart/gnome-desktop-icons-touch.desktop
+ rm -f /home/${USER}/.config/autostart/gnome-desktop-icons.desktop
+ fi
+fi
+# Проверка что существует папка bzu-gmb-utils, если нет, создаем ее
+ if [ ! -d "/home/${USER}/.local/share/bzu-gmb-utils" ]
+ then
+mkdir -p "/home/${USER}/.local/share/bzu-gmb-utils"
+ln -s /home/$USER/.local/share/bzu-gmb-utils /home/$USER/bzu-gmb-utils
+ else
+   if [ ! -d "/home/$USER/bzu-gmb-utils" ];then
+ln -s /home/$USER/.local/share/bzu-gmb-utils /home/$USER/bzu-gmb-utils
+echo "ярлыка небыло, создаем его"
+  fi
+ fi
+# Проверка что существует папка bzu-gmb-apps, если нет, создаем ее
+ if [ ! -d "/home/${USER}/.local/share/bzu-gmb-apps" ]
+ then
+mkdir -p "/home/${USER}/.local/share/bzu-gmb-apps"
+ln -s /home/$USER/.local/share/bzu-gmb-apps /home/$USER/bzu-gmb-apps
+ else
+   if [ ! -d "/home/$USER/bzu-gmb-apps" ];then
+ln -s /home/$USER/.local/share/bzu-gmb-apps /home/$USER/bzu-gmb-apps
+echo "ярлыка небыло, создаем его"
+  fi
+ fi
+# Проверка что существует папка bzu-gmb-temp, если нет, создаем ее
+ if [ ! -d "/home/${USER}/bzu-gmb-temp" ]
+ then
+mkdir -p "/home/${USER}/bzu-gmb-temp"
+ fi
+###############################################################################
+# установка темы/иконок/обои для GNOME
+ if [ -e /usr/bin/gnome-shell ];then
+# Проверка что существует папка c темой Adwaita-dark , если нет, создаем ее
+  if [ ! -d "/usr/share/themes/Adwaita-dark/gnome-shell" ]
+  then
+echo "${pass_user}" | sudo -S rm -rf "/usr/share/themes/Adwaita-dark"
+cd "/home/$USER/bzu-gmb-temp"
+wget "https://github.com/redrootmin/bzu-gmb-modules/releases/download/v1/Adwaita-dark.tar.xz"
+cd "/usr/share/themes"
+echo "${pass_user}" | sudo -S tar -xpJf "/home/$USER/bzu-gmb-temp/Adwaita-dark.tar.xz"
+  fi
+
+# Проверка что существует папка c иконки numix-icons , если нет, создаем ее
+  if [ ! -d "/usr/share/icons/Numix" ]
+  then
+#echo "${pass_user}" | sudo -S rm -rf "/usr/share/themes/Adwaita-dark"
+cd "/home/$USER/bzu-gmb-temp"
+wget "https://github.com/redrootmin/bzu-gmb-modules/releases/download/v1/rosa-numix-icons.tar.xz"
+cd "/usr/share/icons"
+echo "${pass_user}" | sudo -S tar -xpJf "/home/$USER/bzu-gmb-temp/rosa-numix-icons.tar.xz"
+  fi
+
+# Проверка что существует папки c обоями redroot wallpapers , если нет, создаем ее
+  if [ ! -d "/usr/share/backgrounds" ]
+  then
+#echo "${pass_user}" | sudo -S rm -rf "/usr/share/themes/Adwaita-dark"
+cd "/home/$USER/bzu-gmb-temp"
+wget "https://github.com/redrootmin/bzu-gmb-modules/releases/download/v1/rosa-gnome-wallpapers-v1.tar.xz"
+cd "/usr/share"
+echo "${pass_user}" | sudo -S tar -xpJf "/home/$USER/bzu-gmb-temp/rosa-gnome-wallpapers-v1.tar.xz"
+  fi
+
+fi
+
+##################################################################################
+# подключение игровой репы: rosa_gaming
+echo "[rosa_gaming]
+name=rosa_gaming
+baseurl=http://abf-downloads.rosalinux.ru/rosa_gaming_personal/repository/rosa2021.1/x86_64/main/release/
+gpgcheck=0
+enabled=1
+cost=999
+
+[rosa_gaming-i686]
+name=mesa-git-i686
+baseurl=http://abf-downloads.rosalinux.ru/rosa_gaming_personal/repository/rosa2021.1/i686/main/release/
+gpgcheck=0
+enabled=1
+cost=1000" > /tmp/rosa_gaming.repo
+echo "${pass_user}" | sudo -S mv -f /tmp/rosa_gaming.repo /etc/yum.repos.d
+##################################################################################
+# решение проблем с правами пользователей
+#echo "${pass_user}" | sudo -S sed -i '0,/'%wheel'/ s//'#%wheel' /' /etc/sudoers
+echo "${pass_user}" | sudo -S usermod -aG wheel $USER
+##################################################################################
+# установка  обновление системы
+echo "${pass_user}" | sudo -S dnf --refresh distrosync -y
+echo "${pass_user}" | sudo -S dnf update -y
+ if [ -e /usr/bin/gnome-shell ];then
+echo "${pass_user}" | sudo -S dnf remove -y gnome-robots four-in-a-row gnuchess aislerior gnome-chess gnome-mahjongg gnome-sudoku gnome-tetravex iagno lightsoff tail five-or-more gnome-klotski kmahjongg kmines klines kpat
+ fi
+echo "${pass_user}" | sudo -S dnf install -y inxi xow libusb-compat0.1_4 paprefs pavucontrol ananicy p7zip python3 zenity yad grub-customizer libfuse2-devel libfuse3-devel libssl1.1 neofetch git meson ninja gcc gcc-c++ cmake.i686 cmake glibc-devel dbus-devel glslang vulkan.x86_64 vulkan.i686 lib64vulkan-devel.x86_64 lib64vulkan-intel-devel.x86_64 lib64vulkan1.x86_64 libvulkan-devel.i686 libvulkan-intel-devel.i686 libvulkan1.i686
+echo "${pass_user}" | sudo -S dnf autoremove -y
+echo "${pass_user}" | sudo -S dnf clean packages
+##################################################################################
+#загружаем список пакетов из файла в массив
+readarray -t packages_list < "${script_dir}/config/packages-rosa"
+#задем переменной колличество пакетов в массиве
+packages_number=${#packages_list[@]}
+#обьявляем переменную числовой
+i=0
+#цикл проверки пакетов из массива
+while [ $i -lt $packages_number ]
+do
+#вызов функции для проверки пакетов из массива
+install_package_rpm ${packages_list[$i]} ${pass_user}
+i=$(($i + 1))
+done
+echo "${pass_user}" | sudo -S systemctl enable xow && echo "${pass_user}" | sudo -S systemctl start xow
+echo "${pass_user}" | sudo -S systemctl start ananicy
+echo "${pass_user}" | sudo -S dnf clean packages
+
+fi
+#=====================================================================================
+
+#Проверяем какая система запустила bzu-gmb, если Ubuntu\Linux Mint устанавливаем нужные пакеты
+if echo "${linux_os}" | grep -ow "Ubuntu 20.04.4 LTS" > /dev/null || echo "${linux_os}" | grep -ow "Linux Mint 20.2" > /dev/null || echo "${linux_os}" | grep -ow "Ubuntu 21.10" > /dev/null || echo "${linux_os}" | grep -ow "Linux Mint 20.3" > /dev/null
+then
+# установка  обновление системы
+echo "${pass_user}" | sudo -S apt update -y
+echo "${pass_user}" | sudo -S apt upgrade -y
+echo "${pass_user}" | sudo -S apt autoremove -y
+echo "${pass_user}" | sudo -S apt clean -y
+
 #загружаем список пакетов из файла в массив
 readarray -t packages_list < "${script_dir}/config/packages-ubuntu-linux_mint"
 #задем переменной колличество пакетов в массиве
@@ -105,26 +254,9 @@ install_package ${packages_list[$i]} ${pass_user}
 i=$(($i + 1))
 done
 fi
+#=====================================================================================
 
-#Проверяем какая система запустила bzu-gmb, если Ubuntu\Linux Mint устанавливаем нужные пакеты
-if echo "${linux_os}" | grep -ow "Ubuntu 20.04.4 LTS" > /dev/null || echo "${linux_os}" | grep -ow "Mint" > /dev/null || echo "${linux_os}" | grep -ow "Ubuntu 21.10" > /dev/null
-then
-#загружаем список пакетов из файла в массив
-readarray -t packages_list < "${script_dir}/config/packages-ubuntu-linux_mint"
-#задем переменной колличество пакетов в массиве
-packages_number=${#packages_list[@]}
-#обьявляем переменную числовой
-i=0
-#цикл проверки пакетов из массива
-while [ $i -lt $packages_number ]
-do
-#вызов функции для проверки пакетов из массива
-install_package ${packages_list[$i]} ${pass_user}
-i=$(($i + 1))
-done
-fi
-
-#Проверяем какая система запустила bzu-gmb, если Ubuntu\Linux Mint устанавливаем нужные пакеты
+#Проверяем какая система запустила bzu-gmb, если Ubuntu22\Linux Mint21 устанавливаем нужные пакеты
 if echo "${linux_os}" | grep -ow "Ubuntu 22.04 LTS" > /dev/null
 then
 cd;rm -rf bzu-gmb-temp*;rm -f bzu-gmb-temp*;wget https://github.com/redrootmin/bzu-gmb-modules/releases/download/v1/bzu-gmb-temp-v1.tar.xz -O bzu-gmb-temp.tar.xz;tar -xJf bzu-gmb-temp.tar.xz
@@ -162,8 +294,10 @@ echo "${pass_user}" | sudo -S apt remove firefox -y
 echo "${pass_user}" | sudo -S apt update -y
 #sudo apt install firefox-esr
 echo "${pass_user}" | sudo -S apt install -f -y --reinstall firefox
+echo "${pass_user}" | sudo -S apt autoremove -y
+echo "${pass_user}" | sudo -S apt clean -y
 fi
-
+#=====================================================================================
 
 #Проверяем какая система запустила bzu-gmb, если Debian устанавливаем нужные пакеты
 if echo "${linux_os}" | grep -ow "Debian GNU/Linux bookworm/sid" > /dev/null
@@ -183,12 +317,15 @@ install_package ${packages_list[$i]} ${pass_user}
 i=$(($i + 1))
 done
 fi
+#=====================================================================================
 
 #Проверяем какая система запустила bzu-gmb, если Manjaro устанавливаем нужные пакеты
 if echo "${linux_os}" | grep -ow "Manjaro" > /dev/null
 then
+echo "$pass_user" | sudo -S sudo sed -Ei '/EnableAUR/s/^#//' /etc/pamac.conf
 echo "$pass_user" | sudo -S pamac upgrade -a --no-confirm
-echo "$pass_user" | sudo -S pamac install --no-confirm lib32-mesa vulkan-radeon mesa-vdpau lib32-vulkan-radeon lib32-mesa-vdpau libva-mesa-driver lib32-libva-mesa-driver
+#echo "$pass_user" | sudo -S pamac install --no-confirm lib32-mesa vulkan-radeon mesa-vdpau lib32-vulkan-radeon lib32-mesa-vdpau libva-mesa-driver lib32-libva-mesa-driver
+echo "$pass_user" | sudo -S pamac install --no-confirm lib32-mesa vulkan-radeon mesa-vdpau lib32-vulkan-radeon lib32-mesa-vdpau libva-mesa-driver lib32-libva-mesa-driver curl gamemode lib32-gamemode icoutils wget zenity bubblewrap zstd cabextract bc tar vulkan-tools lib32-p11-kit lib32-libcurl-gnutls libcurl-gnutls lib32-sdl2 lib32-freetype2 lib32-gtk2 lib32-alsa-plugins lib32-libpulse lib32-openal lib32-libudev0 lib32-systemd nss-mdns lib32-nss lib32-glu lib32-dbus libcurl-compat lib32-libcurl-compat libxcrypt-compat lib32-libxcrypt lib32-gconf gconf lib32-libldap
 #загружаем список пакетов из файла в массив
 readarray -t packages_list < "${script_dir}/config/packages-manjaro"
 #задем переменной колличество пакетов в массиве
@@ -203,6 +340,7 @@ install_package_pamac ${packages_list[$i]} ${pass_user}
 i=$(($i + 1))
 done
 fi
+#=====================================================================================
 
 # обнуляем статус утилиты, отключаем эксперементальный режим
 echo "" > "${script_dir}/config/status"
@@ -235,7 +373,7 @@ chmod +x "${script_dir}/bzu-gmb-gui-beta4.sh"
 chmod +x "${script_dir}/core-utils/yad"
 chmod +x "${script_dir}/core-utils/zenity"
 
-#Уведомление пользователя, о том что он устанавил себе на ПК
-GTK_THEME="Adwaita-dark" ${zenity} --text-info --html --url="https://drive.google.com/uc?export=view&id=1LZ_W8JSLBbVdppVHxUFnaXuhVpaszSYE" --title="Завершена установка ${version_bzu_gmb}" --width=640 --height=408  --cancel-label=""
-
+#Уведомление пользователя, о том что нового в этой версии
+update_log=`cat "${script_dir}/update_log"`
+GTK_THEME="Adwaita-dark" ${YAD} --list --column=text --no-click --image-on-top --picture --size=fit --image="${script_dir}/image/bzu-gmb-wallpeper-2021-10.png" --width=640 --height=640 --center --inc=256  --text-align=center --title="Завершена установка ${version_bzu_gmb}" --separator=" " --search-column=1 --print-column=1 --wrap-width=560 "$update_log" --no-buttons
 exit 0
